@@ -1,12 +1,18 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import unittest
+from main import app, init_db
 
-from main import app
+class FlaskTestCase(unittest.TestCase):
+    def setUp(self):
+        init_db()
+        self.client = app.test_client()
 
+    def test_home_status(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
 
-def test_homepage():
-    tester = app.test_client()
-    response = tester.get('/')
-    assert response.status_code == 200
-    assert b"Welcome" in response.data
+    def test_add_message(self):
+        response = self.client.post('/add', data={'content': 'Test Message'}, follow_redirects=True)
+        self.assertIn(b'Test Message', response.data)
+
+if __name__ == '__main__':
+    unittest.main()

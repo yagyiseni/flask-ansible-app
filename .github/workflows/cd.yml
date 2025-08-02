@@ -1,28 +1,38 @@
-name: CD Workflow
+name: CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    - name: Print Deployment Message
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Ansible
       run: |
-        echo "🚀 Starting Deployment..."
-        echo "Deployed at $(date)" > deploy-log.txt
+        python3 -m pip install --upgrade pip
+        pip install ansible
 
-    - name: Use GitHub Secret
+    - name: Archive Flask App
       run: |
-        echo "Deploying with secret token: ${{ secrets.API_TOKEN }}" >> deploy-log.txt
+        zip -r flask-app.zip . -x '*.git*' '*venv*'
 
-    - name: Upload Deployment Log
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: deploy-log
-        path: deploy-log.txt
+        name: flask-app
+        path: flask-app.zip
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: false

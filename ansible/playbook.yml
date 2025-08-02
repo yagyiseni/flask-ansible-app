@@ -1,0 +1,60 @@
+---
+- name: Configure Flask VM
+  hosts: flask_vm
+  become: true
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Create app directory
+      file:
+        path: /home/vagrant/flask-app
+        state: directory
+        owner: vagrant
+        group: vagrant
+
+    - name: Copy application files
+      copy:
+        src: ../..
+        dest: /home/vagrant/flask-app/
+        remote_src: no
+        owner: vagrant
+        group: vagrant
+      notify: Restart Flask
+
+    - name: Install Flask and SQLite3
+      pip:
+        name:
+          - flask
+        executable: pip3
+
+    - name: Copy systemd service file
+      copy:
+        src: ../flask.service
+        dest: /etc/systemd/system/flask.service
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Flask
+      systemd:
+        name: flask
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: Restart Flask
+      systemd:
+        name: flask
+        state: restarted
