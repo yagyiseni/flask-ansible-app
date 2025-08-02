@@ -17,12 +17,12 @@ jobs:
         echo "🚀 Starting Deployment..."
         echo "Deployed at $(date)" > deploy-log.txt
 
+    - name: Use GitHub Secret
+      run: |
+        echo "Deploying with secret token: ${{ secrets.API_TOKEN }}" >> deploy-log.txt
+
     - name: Upload Deployment Log
       uses: actions/upload-artifact@v4
       with:
         name: deploy-log
         path: deploy-log.txt
-    
-    - name: Use GitHub Secret
-      run: |
-        echo "Deploying with secret token: ${{ secrets.API_TOKEN }}" >> deploy-log.txt
