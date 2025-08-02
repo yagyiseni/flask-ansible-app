@@ -22,3 +22,7 @@ jobs:
       with:
         name: deploy-log
         path: deploy-log.txt
+    
+    - name: Use GitHub Secret
+      run: |
+        echo "Deploying with secret token: ${{ secrets.API_TOKEN }}" >> deploy-log.txt
