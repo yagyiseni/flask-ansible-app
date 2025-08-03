@@ -28,3 +28,4 @@ Rohan Thapa and Team
 - All files are deployed from GitHub push
 - SQLite is used for message storage
 - A test step is included in CI
+test
