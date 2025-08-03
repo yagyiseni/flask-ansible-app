@@ -2,7 +2,8 @@ name: build-and-deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
@@ -10,37 +11,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Install Python and dependencies (inside VM)
+      - name: Set up Python 3.10 (inside VM)
         run: |
           sudo apt update
-          sudo apt install -y python3.10 python3.10-venv python3.10-dev python3-pip zip
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install -y python3.10 python3.10-venv python3.10-dev
           python3.10 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
           source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Run Unit Tests
         run: |
           source venv/bin/activate
-          python -m unittest discover tests
+          python -m unittest discover -s tests
 
       - name: Archive Flask App
         run: |
-          zip -r flask-app.zip . -x '*.git*' '*venv*'
+          zip -r flask-app.zip . -x "*venv*" "*.git*" "*.github*" "*.vagrant*"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: flask-app
           path: flask-app.zip
 
-      - name: Add SSH Key for Ansible
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 192.168.56.10 >> ~/.ssh/known_hosts
-
       - name: Run Ansible Playbook
-        run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
