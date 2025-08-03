@@ -37,6 +37,12 @@ jobs:
       with:
         name: flask-app
         path: flask-app.zip
+   
+    - name: Add SSH key
+      run: |
+      mkdir -p ~/.ssh
+      echo "${{ secrets.VM_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      chmod 600 ~/.ssh/id_rsa
 
     - name: Run Ansible Playbook
       run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
