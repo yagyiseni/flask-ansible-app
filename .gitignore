@@ -1,3 +1,31 @@
-venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+
+# SQLite DB
+*.db
+*.sqlite3
+
+# Flask cache
+instance/
+.webassets-cache
+
+# Pytest
+.cache/
+
+# VS Code
+.vscode/
+
+# GitHub workflow artifacts
+*.zip
+
+# Ignore Ansible local state
+*.retry
+
+# Ignore Vagrant local VM files
+.vagrant/
