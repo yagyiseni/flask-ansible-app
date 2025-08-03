@@ -1,31 +1,38 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+*.swp
 
 # Virtual environment
 venv/
-.env/
+ENV/
+env/
 
-# SQLite DB
-*.db
-*.sqlite3
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
 
-# Flask cache
-instance/
-.webassets-cache
-
-# Pytest
-.cache/
-
-# VS Code
+# VSCode
 .vscode/
 
-# GitHub workflow artifacts
+# GitHub runner temp files
 *.zip
+*.tar.gz
 
-# Ignore Ansible local state
+# System files
+.DS_Store
+
+# Vagrant and VirtualBox
+.vagrant/
+*.box
+
+# Python specific
+*.log
+
+# GitHub Actions
+actions-runner/
+
+# Ansible
 *.retry
-
-# Ignore Vagrant local VM files
 .vagrant/
