@@ -13,18 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10 (inside VM)
+      - name: Install Python 3.10 and dependencies
         run: |
           sudo apt update
           sudo apt install -y software-properties-common
           sudo add-apt-repository -y ppa:deadsnakes/ppa
           sudo apt update
-          sudo apt install -y python3.10 python3.10-venv python3.10-dev
+          sudo apt install -y python3.10 python3.10-venv python3.10-dev python3-pip zip
+
+      - name: Set up Python virtual environment
+        run: |
           python3.10 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           source venv/bin/activate
           pip install -r requirements.txt
@@ -43,6 +46,11 @@ jobs:
         with:
           name: flask-app
           path: flask-app.zip
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
 
       - name: Run Ansible Playbook
         run: |
