@@ -1,0 +1,29 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Ansible & unzip
+      run: |
+        sudo apt update
+        sudo apt install -y unzip python3-pip
+        pip3 install ansible
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: false

@@ -1,60 +1,40 @@
 ---
-- name: Configure Flask VM
-  hosts: flask_vm
+- name: Deploy Flask App on WSL2
+  hosts: flask_wsl
   become: true
   tasks:
-
-    - name: Update apt cache
+    - name: Ensure unzip is installed (fixes earlier bug)
       apt:
-        update_cache: yes
+        name: unzip
+        state: present
 
-    - name: Install required packages
+    - name: Install Python3 and pip
       apt:
         name:
           - python3
           - python3-pip
         state: present
 
-    - name: Create app directory
-      file:
-        path: /home/vagrant/flask-app
-        state: directory
-        owner: vagrant
-        group: vagrant
-
-    - name: Copy application files
-      copy:
-        src: ../..
-        dest: /home/vagrant/flask-app/
-        remote_src: no
-        owner: vagrant
-        group: vagrant
-      notify: Restart Flask
-
     - name: Install Flask and SQLite3
       pip:
         name:
           - flask
-        executable: pip3
 
-    - name: Copy systemd service file
+    - name: Create app directory
+      file:
+        path: /home/runner/flask-app
+        state: directory
+
+    - name: Copy application files
       copy:
-        src: ../flask.service
-        dest: /etc/systemd/system/flask.service
-        mode: '0644'
+        src: ../..
+        dest: /home/runner/flask-app/
+        remote_src: no
 
-    - name: Reload systemd daemon
-      systemd:
-        daemon_reload: yes
+    - name: Kill old Flask app if any
+      shell: pkill -f "main.py" || true
 
-    - name: Enable and start Flask
-      systemd:
-        name: flask
-        enabled: yes
-        state: started
-
-  handlers:
-    - name: Restart Flask
-      systemd:
-        name: flask
-        state: restarted
+    - name: Run Flask app with nohup
+      shell: |
+        cd /home/runner/flask-app/app
+        nohup python3 main.py > flask.log 2>&1 &
