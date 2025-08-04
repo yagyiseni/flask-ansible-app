@@ -1,18 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Flask App with SQLite</title>
+  <title>Flask App</title>
 </head>
 <body>
-  <h1>Messages</h1>
-  <ul>
-    {% for m in messages %}
-      <li>{{ m[0] }}</li>
-    {% endfor %}
-  </ul>
-  <form method="POST" action="/add">
-    <input type="text" name="content" placeholder="Enter message" required />
-    <input type="submit" value="Add" />
-  </form>
+  <h1>Hello from Flask!</h1>
+  <p>Visitor count: {{ count }}</p>
 </body>
 </html>

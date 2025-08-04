@@ -1,18 +1,15 @@
 import unittest
-from main import app, init_db
+from main import app
 
-class FlaskTestCase(unittest.TestCase):
+class FlaskAppTestCase(unittest.TestCase):
     def setUp(self):
-        init_db()
-        self.client = app.test_client()
+        self.app = app.test_client()
+        self.app.testing = True
 
-    def test_home_status(self):
-        response = self.client.get('/')
+    def test_home(self):
+        response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
-
-    def test_add_message(self):
-        response = self.client.post('/add', data={'content': 'Test Message'}, follow_redirects=True)
-        self.assertIn(b'Test Message', response.data)
+        self.assertIn(b'Hello from Flask!', response.data)
 
 if __name__ == '__main__':
     unittest.main()
