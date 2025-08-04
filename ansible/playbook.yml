@@ -25,7 +25,7 @@
 
     - name: Copy application files
       copy:
-        src: src/
+        src: ../src/
         dest: /home/rohan/flaskapp/
         mode: '0755'
 
