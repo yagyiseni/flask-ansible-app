@@ -20,7 +20,22 @@ jobs:
       - name: Install Ansible & unzip
         run: |
           sudo apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ansible unzip
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ansible unzip zip
+
+      - name: Create .env from GitHub Secrets
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+      - name: Archive Flask App
+        run: |
+          zip -r flask-app.zip . -x '*.git*' '*__pycache__*' '*.venv*' '*.vagrant*' '*.zip'
+
+      - name: Upload Flask App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flask-app
+          path: flask-app.zip
 
       - name: Run Ansible Playbook
         run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
