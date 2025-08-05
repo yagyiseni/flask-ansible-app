@@ -21,6 +21,11 @@
       apt:
         name: python3-flask
         state: present
+    
+    - name: Install SQLite3
+      apt:
+        name: sqlite3
+        state: present
 
     - name: Copy Flask application files
       copy:
