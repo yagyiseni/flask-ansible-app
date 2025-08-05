@@ -1,9 +1,9 @@
 ---
 - name: Deploy Flask App on WSL2
   hosts: localhost
-  become: true
+  become: yes
   tasks:
-    - name: Ensure unzip is installed (fixes earlier bug)
+    - name: Ensure unzip is installed
       apt:
         name: unzip
         state: present
@@ -15,23 +15,32 @@
           - python3
           - python3-pip
         state: present
+        update_cache: yes
 
-    - name: Install Flask and SQLite3
-      shell: |
-        python3 -m pip install flask --break-system-packages
-        apt install -y sqlite3
-      args:
-        executable: /bin/bash
+    - name: Install Flask using pip3
+      pip:
+        name: flask
+        executable: pip3
 
-    - name: Copy application files
+    - name: Install SQLite3
+      apt:
+        name: sqlite3
+        state: present
+
+    - name: Create app directory
+      file:
+        path: /home/rohan/flaskapp
+        state: directory
+        mode: '0755'
+
+    - name: Copy Flask app files
       copy:
-        src: ./src/
+        src: ../app/
         dest: /home/rohan/flaskapp/
         mode: '0755'
-        remote_src: yes
 
-    - name: Run Flask App with nohup
+    - name: Start Flask app in background (no systemd)
       shell: |
-        nohup python3 /home/rohan/flaskapp/main.py > /home/rohan/flaskapp/app.log 2>&1 &
+        nohup python3 /home/rohan/flaskapp/main.py > /home/rohan/flaskapp/flask.log 2>&1 &
       args:
         executable: /bin/bash

@@ -1,11 +1,11 @@
 [Unit]
-Description=Flask App
+Description=Flask Application
 After=network.target
 
 [Service]
-User=vagrant
-WorkingDirectory=/home/vagrant/flask-app
-ExecStart=/usr/bin/python3 main.py
+User=rohan
+WorkingDirectory=/home/rohan/flaskapp
+ExecStart=/usr/bin/python3 /home/rohan/flaskapp/main.py
 Restart=always
 
 [Install]
