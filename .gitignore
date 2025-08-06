@@ -36,3 +36,6 @@ actions-runner/
 # Ansible
 *.retry
 .vagrant/
+
+#env
+.env

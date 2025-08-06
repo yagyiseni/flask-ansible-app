@@ -1,30 +1,20 @@
-from flask import Flask, render_template
-import sqlite3
 import os
+from flask import Flask, render_template
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env
 
 app = Flask(__name__)
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'visitors.db')
+app.secret_key = os.getenv("SECRET_KEY", "defaultsecretkey")
+db_url = os.getenv("DATABASE_URL")
 
-def init_db():
-    if not os.path.exists(DB_PATH):
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        c.execute('CREATE TABLE IF NOT EXISTS visits (count INTEGER)')
-        c.execute('INSERT INTO visits (count) VALUES (0)')
-        conn.commit()
-        conn.close()
+counter = 0
 
 @app.route('/')
 def home():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('UPDATE visits SET count = count + 1')
-    conn.commit()
-    c.execute('SELECT count FROM visits')
-    count = c.fetchone()[0]
-    conn.close()
-    return render_template('index.html', count=count)
+    global counter
+    counter += 1
+    return render_template('index.html', count=counter)
 
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=5000)
